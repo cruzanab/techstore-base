@@ -1,8 +1,12 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 
-export default function PaginaProduto({ produtos, onAdicionar }) {
+export default function PaginaProduto({ produtos, onAdicionar, onRegistrarInteresse }) {
   const { id } = useParams()
   const produto = produtos.find((item) => item.id === id)
+  const [nome, setNome] = useState('')
+  const [email, setEmail] = useState('')
+  const [mensagemInteresse, setMensagemInteresse] = useState('')
 
   if (!produto) {
     return (
@@ -16,8 +20,31 @@ export default function PaginaProduto({ produtos, onAdicionar }) {
   }
 
   const relacionados = produtos
-    .filter((item) => item.category === produto.category && item.id !== produto.id)
+    .filter(
+      (item) =>
+        item.category === produto.category &&
+        item.id !== produto.id &&
+        typeof item?.price === 'number' &&
+        !Number.isNaN(item.price) &&
+        item.estoque > 0
+    )
     .slice(0, 4)
+
+  const semEstoque = produto.estoque === 0
+
+  function handleRegistrarInteresse(evento) {
+    evento.preventDefault()
+
+    if (!nome.trim() || !email.trim()) {
+      setMensagemInteresse('Preencha nome e e-mail para receber a notificação.')
+      return
+    }
+
+    onRegistrarInteresse(produto.id, { nome, email })
+    setNome('')
+    setEmail('')
+    setMensagemInteresse(`Tudo certo, ${nome}! Você será avisado quando ${produto.title} voltar.`)
+  }
 
   return (
     <section>
@@ -41,13 +68,41 @@ export default function PaginaProduto({ produtos, onAdicionar }) {
           <p className="detalhe-descricao">{produto.description}</p>
           <p className="detalhe-estoque">{produto.estoque} unidades disponíveis</p>
 
-          <button
-            className="botao botao-grande"
-            onClick={() => onAdicionar(produto)}
-            disabled={produto.estoque === 0}
-          >
-            Adicionar ao carrinho
-          </button>
+          {semEstoque ? (
+            <form className="avise-me" onSubmit={handleRegistrarInteresse}>
+              <label className="rotulo" htmlFor="nome-avise-me">
+                Nome
+              </label>
+              <input
+                id="nome-avise-me"
+                type="text"
+                value={nome}
+                onChange={(evento) => setNome(evento.target.value)}
+                placeholder="Seu nome"
+              />
+
+              <label className="rotulo" htmlFor="email-avise-me">
+                E-mail
+              </label>
+              <input
+                id="email-avise-me"
+                type="email"
+                value={email}
+                onChange={(evento) => setEmail(evento.target.value)}
+                placeholder="seu@email.com"
+              />
+
+              <button className="botao botao-grande botao-secundario" type="submit">
+                Avise-me
+              </button>
+
+              {mensagemInteresse && <p className="mensagem-avise-me">{mensagemInteresse}</p>}
+            </form>
+          ) : (
+            <button className="botao botao-grande" onClick={() => onAdicionar(produto)}>
+              Adicionar ao carrinho
+            </button>
+          )}
 
           <ul className="detalhe-garantias">
             <li>Troca grátis em até 30 dias</li>

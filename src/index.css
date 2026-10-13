@@ -395,7 +395,7 @@ h2 {
   font-size: 0.85rem;
 }
 
-.preco-original + .preco {
+.preco-original+.preco {
   color: var(--cor-destaque);
 }
 
@@ -432,6 +432,18 @@ h2 {
 .selo-ok {
   background: var(--cor-frete-fundo);
   color: var(--cor-frete);
+}
+
+.mensagem-card {
+  margin: 0;
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-frete-fundo);
+  color: var(--cor-frete);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  border: 1px solid #cfe7d8;
 }
 
 /* Botões */
@@ -591,6 +603,31 @@ h2 {
   font-weight: 700;
 }
 
+.avise-me {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-4);
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+
+.avise-me input {
+  width: 100%;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-pequeno);
+  padding: var(--espaco-3);
+  background: var(--cor-superficie);
+}
+
+.mensagem-avise-me {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cor-frete);
+}
+
 /* Carrinho */
 
 .carrinho-layout {
@@ -622,7 +659,7 @@ h2 {
   padding: var(--espaco-4);
 }
 
-.item-carrinho + .item-carrinho {
+.item-carrinho+.item-carrinho {
   border-top: 1px solid var(--cor-borda);
 }
 
@@ -717,6 +754,22 @@ h2 {
   margin: 0;
   font-size: 0.85rem;
   font-weight: 600;
+}
+
+.mensagem-frete-gratis {
+  margin: 0;
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-alerta-fundo);
+  color: var(--cor-alerta);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.mensagem-frete-gratis-ok {
+  background: var(--cor-frete-fundo);
+  color: var(--cor-frete);
 }
 
 .resumo-linha,

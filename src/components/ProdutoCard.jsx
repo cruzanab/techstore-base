@@ -1,8 +1,24 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { formatarPreco } from '../utils/formatarPreco'
 
 export default function ProdutoCard({ produto, onAdicionar }) {
+  const [mensagem, setMensagem] = useState('')
   const esgotado = produto.estoque === 0
+
+  useEffect(() => {
+    if (!mensagem) return
+
+    const temporizador = setTimeout(() => setMensagem(''), 1600)
+    return () => clearTimeout(temporizador)
+  }, [mensagem])
+
+  function handleAdicionar() {
+    if (esgotado) return
+
+    onAdicionar(produto)
+    setMensagem(`${produto.title} adicionado ao carrinho!`)
+  }
 
   return (
     <article className="card">
@@ -29,9 +45,15 @@ export default function ProdutoCard({ produto, onAdicionar }) {
         {esgotado && <span className="selo selo-esgotado">Esgotado</span>}
       </div>
 
-      <button className="botao" onClick={() => onAdicionar(produto)} disabled={esgotado}>
+      <button className="botao" onClick={handleAdicionar} disabled={esgotado}>
         Adicionar ao carrinho
       </button>
+
+      {mensagem && (
+        <p className="mensagem-card" aria-live="polite">
+          {mensagem}
+        </p>
+      )}
     </article>
   )
 }

@@ -1,6 +1,9 @@
 import { formatarPreco } from '../utils/formatarPreco'
 
 export default function SugestaoItem({ produto, onAdicionar }) {
+
+  console.log(produto)
+
   return (
     <div className="sugestao">
       <div className="sugestao-imagem-moldura">

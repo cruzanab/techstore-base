@@ -78,7 +78,9 @@ export default function PaginaProduto({ produtos, onAdicionar, onRegistrarIntere
           <p className="card-avaliacao">
             ★ {produto.rating.rate} <span>({produto.rating.count} avaliações)</span>
           </p>
-          <p className="detalhe-preco">R$ {produto.price.toFixed(2).replace('.', ',')}</p>
+          <p className="detalhe-preco">
+            {precoValido ? `R$ ${Number(produto.price).toFixed(2).replace('.', ',')}` : 'Preço indisponível'}
+          </p>
           <p className="detalhe-descricao">{produto.description}</p>
           <p className="detalhe-estoque">{produto.estoque} unidades disponíveis</p>
 
@@ -123,6 +125,28 @@ export default function PaginaProduto({ produtos, onAdicionar, onRegistrarIntere
                 </p>
               )}
             </>
+          )}
+
+          {produto.estoque === 0 && (
+            <form onSubmit={enviarListaEspera} className="cupom" style={{ marginTop: '1rem' }}>
+              <label className="rotulo">Avise-me quando voltar</label>
+              <input
+                value={nome}
+                onChange={(evento) => setNome(evento.target.value)}
+                placeholder="Seu nome"
+                style={{ marginBottom: '0.5rem' }}
+              />
+              <input
+                value={email}
+                onChange={(evento) => setEmail(evento.target.value)}
+                placeholder="Seu e-mail"
+                style={{ marginBottom: '0.5rem' }}
+              />
+              <button type="submit" className="botao botao-secundario">
+                Quero receber aviso
+              </button>
+              {mensagemEspera && <p className="mensagem-cupom">{mensagemEspera}</p>}
+            </form>
           )}
 
           <ul className="detalhe-garantias">

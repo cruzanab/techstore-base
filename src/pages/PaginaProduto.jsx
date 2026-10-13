@@ -1,14 +1,26 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import ProdutoCard from '../components/ProdutoCard'
 
-export default function PaginaProduto({ produtos, onAdicionar, onAdicionarListaEspera }) {
+export default function PaginaProduto({ produtos, onAdicionar, onRegistrarInteresse }) {
   const { id } = useParams()
   const produto = produtos.find((item) => item.id === id)
-  const precoValido = produto ? Number.isFinite(Number(produto.price)) : false
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
-  const [mensagemEspera, setMensagemEspera] = useState('')
+  const [mensagemInteresse, setMensagemInteresse] = useState('')
+  const [mensagemCarrinho, setMensagemCarrinho] = useState('')
+
+  useEffect(() => {
+    if (!mensagemCarrinho) return
+
+    const temporizador = setTimeout(() => setMensagemCarrinho(''), 1600)
+    return () => clearTimeout(temporizador)
+  }, [mensagemCarrinho])
+
+  const handleAdicionarCarrinho = () => {
+    onAdicionar(produto)
+    setMensagemCarrinho(`${produto.title} adicionado ao carrinho!`)
+  }
 
   if (!produto) {
     return (
@@ -22,20 +34,30 @@ export default function PaginaProduto({ produtos, onAdicionar, onAdicionarListaE
   }
 
   const relacionados = produtos
-    .filter((item) => item.category === produto.category && item.id !== produto.id)
+    .filter(
+      (item) =>
+        item.category === produto.category &&
+        item.id !== produto.id &&
+        typeof item?.price === 'number' &&
+        !Number.isNaN(item.price) &&
+        item.estoque > 0
+    )
     .slice(0, 4)
 
-  function enviarListaEspera(evento) {
+  const semEstoque = produto.estoque === 0
+
+  function handleRegistrarInteresse(evento) {
     evento.preventDefault()
 
     if (!nome.trim() || !email.trim()) {
+      setMensagemInteresse('Preencha nome e e-mail para receber a notificação.')
       return
     }
 
-    onAdicionarListaEspera({ produtoId: produto.id, nome: nome.trim(), email: email.trim() })
+    onRegistrarInteresse(produto.id, { nome, email })
     setNome('')
     setEmail('')
-    setMensagemEspera('Você foi adicionado à lista de espera.')
+    setMensagemInteresse(`Tudo certo, ${nome}! Você será avisado quando ${produto.title} voltar.`)
   }
 
   return (
@@ -62,19 +84,48 @@ export default function PaginaProduto({ produtos, onAdicionar, onAdicionarListaE
           <p className="detalhe-descricao">{produto.description}</p>
           <p className="detalhe-estoque">{produto.estoque} unidades disponíveis</p>
 
-          {!precoValido && (
-            <p className="aviso aviso-erro" style={{ marginBottom: '1rem' }}>
-              Produto temporariamente indisponível: o preço está sendo definido pelo time de suprimentos.
-            </p>
-          )}
+          {semEstoque ? (
+            <form className="avise-me" onSubmit={handleRegistrarInteresse}>
+              <label className="rotulo" htmlFor="nome-avise-me">
+                Nome
+              </label>
+              <input
+                id="nome-avise-me"
+                type="text"
+                value={nome}
+                onChange={(evento) => setNome(evento.target.value)}
+                placeholder="Seu nome"
+              />
 
-          <button
-            className="botao botao-grande"
-            onClick={() => onAdicionar(produto)}
-            disabled={produto.estoque === 0 || !precoValido}
-          >
-            {precoValido ? 'Adicionar ao carrinho' : 'Preço em atualização'}
-          </button>
+              <label className="rotulo" htmlFor="email-avise-me">
+                E-mail
+              </label>
+              <input
+                id="email-avise-me"
+                type="email"
+                value={email}
+                onChange={(evento) => setEmail(evento.target.value)}
+                placeholder="seu@email.com"
+              />
+
+              <button className="botao botao-grande botao-secundario" type="submit">
+                Avise-me
+              </button>
+
+              {mensagemInteresse && <p className="mensagem-avise-me">{mensagemInteresse}</p>}
+            </form>
+          ) : (
+            <>
+              <button className="botao botao-grande" onClick={handleAdicionarCarrinho}>
+                Adicionar ao carrinho
+              </button>
+              {mensagemCarrinho && (
+                <p className="mensagem-card" aria-live="polite">
+                  {mensagemCarrinho}
+                </p>
+              )}
+            </>
+          )}
 
           {produto.estoque === 0 && (
             <form onSubmit={enviarListaEspera} className="cupom" style={{ marginTop: '1rem' }}>

@@ -1,7 +1,9 @@
 // Página usada pelo time de estoque para acompanhar a quantidade de cada produto
-export default function Estoque({ produtos, listaEspera = [] }) {
+export default function Estoque({ produtos, listaEspera = {} }) {
   // slice cria uma cópia, para o sort não alterar a lista original
   const ordenados = produtos.slice().sort((a, b) => a.estoque - b.estoque)
+
+  const produtosComEspera = produtos.filter((produto) => (listaEspera[produto.id] || []).length > 0)
 
   return (
     <section>
@@ -38,31 +40,33 @@ export default function Estoque({ produtos, listaEspera = [] }) {
         </table>
       </div>
 
-      <h2 style={{ marginTop: '2rem' }}>Lista de espera</h2>
-      {listaEspera.length === 0 ? (
-        <p className="aviso">Nenhum cliente na fila de espera.</p>
+      <h2>Lista de espera</h2>
+      {produtosComEspera.length === 0 ? (
+        <p className="aviso">Nenhum cliente aguardando reposição no momento.</p>
       ) : (
         <div className="tabela-moldura">
           <table className="tabela">
             <thead>
               <tr>
                 <th>Produto</th>
+                <th>Clientes</th>
                 <th>Nome</th>
                 <th>E-mail</th>
               </tr>
             </thead>
             <tbody>
-              {listaEspera.map((item, index) => {
-                const produto = produtos.find((produtoAtual) => produtoAtual.id === item.produtoId)
-
-                return (
-                  <tr key={`${item.produtoId}-${index}`}>
-                    <td>{produto ? produto.title : 'Produto removido'}</td>
-                    <td>{item.nome}</td>
-                    <td>{item.email}</td>
+              {produtosComEspera.flatMap((produto) =>
+                (listaEspera[produto.id] || []).map((cliente, index) => (
+                  <tr key={`${produto.id}-${cliente.email}-${index}`}>
+                    {index === 0 && <td>{produto.title}</td>}
+                    {index === 0 && <td>{listaEspera[produto.id].length}</td>}
+                    {index > 0 && <td></td>}
+                    {index > 0 && <td></td>}
+                    <td>{cliente.nome}</td>
+                    <td>{cliente.email}</td>
                   </tr>
-                )
-              })}
+                ))
+              )}
             </tbody>
           </table>
         </div>

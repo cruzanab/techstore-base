@@ -14,15 +14,16 @@ export default function Loja({ produtos, onAdicionar }) {
   const [produtosVisiveis, setProdutosVisiveis] = useState([])
 
   useEffect(() => {
-    const produtosDisponiveis = produtos.filter(
-      (produto) => produto.estoque > 0 && Number.isFinite(Number(produto.price))
-    )
+    const produtosValidos = produtos.filter((produto) => {
+      const precoValido = typeof produto?.price === 'number' && !Number.isNaN(produto.price)
+      return precoValido
+    })
 
     if (categoria === 'todas') {
-      setProdutosVisiveis(produtosDisponiveis)
+      setProdutosVisiveis(produtosValidos)
     } else {
       setProdutosVisiveis(
-        produtosDisponiveis.filter((produto) => produto.category === categoria)
+        produtosValidos.filter((produto) => produto.category === categoria)
       )
     }
   }, [categoria, produtos])
@@ -49,7 +50,8 @@ export default function Loja({ produtos, onAdicionar }) {
 
       <div className="grade">
         {produtosVisiveis.map((produto) => (
-          <ProdutoCard key={produto.id} produto={produto} onAdicionar={onAdicionar} />
+          produto.estoque > 0 && (
+            <ProdutoCard key={produto.id} produto={produto} onAdicionar={onAdicionar} />)
         ))}
       </div>
     </section>

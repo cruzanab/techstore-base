@@ -17,7 +17,7 @@ export default function App() {
   const [carrinho, setCarrinho] = useState([])
   const [clientes, setClientes] = useState([])
   const [clienteAtualId, setClienteAtualId] = useState(null)
-  const [listaEspera, setListaEspera] = useState([])
+  const [listaEspera, setListaEspera] = useState({})
 
   useEffect(() => {
     buscarProdutos()
@@ -32,7 +32,12 @@ export default function App() {
   }, [])
 
   function adicionarAoCarrinho(produto) {
-    setCarrinho(carrinho.concat(produto))
+    const produtoNormalizado = {
+      ...produto,
+      price: Number(produto?.price) || 0,
+    }
+
+    setCarrinho((atual) => atual.concat(produtoNormalizado))
   }
 
   function removerUmaUnidade(produtoId) {
@@ -49,8 +54,16 @@ export default function App() {
     )
   }
 
-  function adicionarListaEspera({ produtoId, nome, email }) {
-    setListaEspera((atual) => [...atual, { produtoId, nome, email }])
+  function registrarInteresse(produtoId, dados) {
+    const nome = String(dados?.nome || '').trim()
+    const email = String(dados?.email || '').trim()
+
+    if (!nome || !email) return
+
+    setListaEspera((atual) => ({
+      ...atual,
+      [produtoId]: [...(atual[produtoId] || []), { nome, email }],
+    }))
   }
 
   const clienteAtual = clientes.find((cliente) => cliente.id === clienteAtualId)
@@ -76,7 +89,7 @@ export default function App() {
                 <PaginaProduto
                   produtos={produtos}
                   onAdicionar={adicionarAoCarrinho}
-                  onAdicionarListaEspera={adicionarListaEspera}
+                  onRegistrarInteresse={registrarInteresse}
                 />
               }
             />
@@ -92,7 +105,10 @@ export default function App() {
                 />
               }
             />
-            <Route path="/estoque" element={<Estoque produtos={produtos} listaEspera={listaEspera} />} />
+            <Route
+              path="/estoque"
+              element={<Estoque produtos={produtos} listaEspera={listaEspera} />}
+            />
           </Routes>
         )}
       </main>

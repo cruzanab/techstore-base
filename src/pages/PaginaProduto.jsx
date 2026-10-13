@@ -1,10 +1,14 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import ProdutoCard from '../components/ProdutoCard'
 
-export default function PaginaProduto({ produtos, onAdicionar }) {
+export default function PaginaProduto({ produtos, onAdicionar, onAdicionarListaEspera }) {
   const { id } = useParams()
   const produto = produtos.find((item) => item.id === id)
   const precoValido = produto ? Number.isFinite(Number(produto.price)) : false
+  const [nome, setNome] = useState('')
+  const [email, setEmail] = useState('')
+  const [mensagemEspera, setMensagemEspera] = useState('')
 
   if (!produto) {
     return (
@@ -20,6 +24,19 @@ export default function PaginaProduto({ produtos, onAdicionar }) {
   const relacionados = produtos
     .filter((item) => item.category === produto.category && item.id !== produto.id)
     .slice(0, 4)
+
+  function enviarListaEspera(evento) {
+    evento.preventDefault()
+
+    if (!nome.trim() || !email.trim()) {
+      return
+    }
+
+    onAdicionarListaEspera({ produtoId: produto.id, nome: nome.trim(), email: email.trim() })
+    setNome('')
+    setEmail('')
+    setMensagemEspera('Você foi adicionado à lista de espera.')
+  }
 
   return (
     <section>
@@ -45,13 +62,41 @@ export default function PaginaProduto({ produtos, onAdicionar }) {
           <p className="detalhe-descricao">{produto.description}</p>
           <p className="detalhe-estoque">{produto.estoque} unidades disponíveis</p>
 
+          {!precoValido && (
+            <p className="aviso aviso-erro" style={{ marginBottom: '1rem' }}>
+              Produto temporariamente indisponível: o preço está sendo definido pelo time de suprimentos.
+            </p>
+          )}
+
           <button
             className="botao botao-grande"
             onClick={() => onAdicionar(produto)}
             disabled={produto.estoque === 0 || !precoValido}
           >
-            {precoValido ? 'Adicionar ao carrinho' : 'Produto indisponível'}
+            {precoValido ? 'Adicionar ao carrinho' : 'Preço em atualização'}
           </button>
+
+          {produto.estoque === 0 && (
+            <form onSubmit={enviarListaEspera} className="cupom" style={{ marginTop: '1rem' }}>
+              <label className="rotulo">Avise-me quando voltar</label>
+              <input
+                value={nome}
+                onChange={(evento) => setNome(evento.target.value)}
+                placeholder="Seu nome"
+                style={{ marginBottom: '0.5rem' }}
+              />
+              <input
+                value={email}
+                onChange={(evento) => setEmail(evento.target.value)}
+                placeholder="Seu e-mail"
+                style={{ marginBottom: '0.5rem' }}
+              />
+              <button type="submit" className="botao botao-secundario">
+                Quero receber aviso
+              </button>
+              {mensagemEspera && <p className="mensagem-cupom">{mensagemEspera}</p>}
+            </form>
+          )}
 
           <ul className="detalhe-garantias">
             <li>Troca grátis em até 30 dias</li>

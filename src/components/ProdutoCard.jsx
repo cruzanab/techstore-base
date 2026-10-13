@@ -41,7 +41,7 @@ export default function ProdutoCard({ produto, onAdicionar }) {
         onClick={() => onAdicionar(produto)}
         disabled={esgotado || !precoValido}
       >
-        {precoValido ? 'Adicionar ao carrinho' : 'Indisponível'}
+        {precoValido ? 'Adicionar ao carrinho' : 'Preço em atualização'}
       </button>
     </article>
   )

@@ -3,6 +3,7 @@ import { formatarPreco } from '../utils/formatarPreco'
 
 export default function ProdutoCard({ produto, onAdicionar }) {
   const esgotado = produto.estoque === 0
+  const precoValido = Number.isFinite(Number(produto.price))
 
   return (
     <article className="card">
@@ -29,8 +30,12 @@ export default function ProdutoCard({ produto, onAdicionar }) {
         {esgotado && <span className="selo selo-esgotado">Esgotado</span>}
       </div>
 
-      <button className="botao" onClick={() => onAdicionar(produto)} disabled={esgotado}>
-        Adicionar ao carrinho
+      <button
+        className="botao"
+        onClick={() => onAdicionar(produto)}
+        disabled={esgotado || !precoValido}
+      >
+        {precoValido ? 'Adicionar ao carrinho' : 'Indisponível'}
       </button>
     </article>
   )

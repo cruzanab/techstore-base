@@ -395,7 +395,7 @@ h2 {
   font-size: 0.85rem;
 }
 
-.preco-original + .preco {
+.preco-original+.preco {
   color: var(--cor-destaque);
 }
 
@@ -573,6 +573,35 @@ h2 {
   color: var(--cor-frete);
 }
 
+.detalhe-estoque-esgotado {
+  color: var(--cor-destaque);
+}
+
+.form-aviso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-4);
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+
+.form-aviso input {
+  width: 100%;
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-superficie);
+}
+
+.mensagem-aviso {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--cor-frete);
+  font-weight: 600;
+}
+
 .detalhe-garantias {
   list-style: none;
   margin: 0;
@@ -622,7 +651,7 @@ h2 {
   padding: var(--espaco-4);
 }
 
-.item-carrinho + .item-carrinho {
+.item-carrinho+.item-carrinho {
   border-top: 1px solid var(--cor-borda);
 }
 
@@ -821,6 +850,19 @@ h2 {
 
 .tabela tbody tr:last-child td {
   border-bottom: none;
+}
+
+.lista-espera {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--espaco-1);
+  color: var(--cor-texto-suave);
+}
+
+.texto-suave {
+  color: var(--cor-texto-suave);
 }
 
 /* Rodapé */
